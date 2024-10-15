@@ -18,7 +18,14 @@ comparison with real promoter sequences.
 **HMM shuffling**
 Another way to create controlled sequences is by feeding the .fasta files to the HMMER and generate the same amount of 
 random sequences that conserve nucleotide composition based on the relative position. 
+The following commads are used to build profile from multiple-sequence alignment in a raw .fasta file and then generate 
+sequence alignments using the profile: 
 
+``` bash
+hmmbuild --dna control_promoter_sequences/athaliana_200_hmm_profile.txt raw_promoter_sequences/athaliana_200.fa 
+hmmemit -o control_promoter_sequences/athaliana_200_hmm.fa -N 22703 \ 
+control_promoter_sequences/athaliana_200_hmm_profile.txt 
+```
 
 ### Promoter shape prediciton
 The shape of the promoters from the six species was analyzed to investigate conservation. Promoter shape prediction was focused on the 400 bp region surrounding the TSS. The  [deepDNAshape package](https://github.com/JinsenLi/deepDNAshape/blob/main/README.md) was used to predict DNA shape properties for each promoter with the following script:
