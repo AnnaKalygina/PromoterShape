@@ -56,5 +56,39 @@ The following command was used:
 ``` bash 
 shuf -n 1000 <athaliana_MGW_200.txt> > <athaliana_MGW_200_sample_1k.txt>
 ```
+The following R script is used to plot the figures:
 
+``` R
+library(ggplot2)
+library(reshape2)
+library(gridExtra)
+
+properties <- c("MGW", "Buckle","Opening", "Tilt")
+
+
+input_dir <- "~/Downloads/athaliana_"
+plot_list <- list()
+
+for (prop in properties) {
+
+  file_path <- paste0(input_dir, prop, "_200.txt")
+  data <- read.table(file_path, header = FALSE)
+  average_data <- colMeans(data)
+  positions <- seq(-200, 200, length.out = ncol(data))
+  average_df <- data.frame(Position = positions, Mean_Value = average_data)
+
+  p <- ggplot(average_df, aes(x = Position, y = Mean_Value)) +
+    geom_line(color = "blue") +
+    theme_minimal() +
+    labs(x = "Position", y = "Average Feature Value", 
+         title = paste("Average DNA Shape Prediction for", prop)) +
+    scale_x_continuous(breaks = seq(-200, 200, 50))  # Adjust x-axis ticks
+
+  plot_list[[prop]] <- p
+}
+
+grid.arrange(grobs = plot_list, ncol = 1)
+```
+The following figures are obtained:
+![image](https://github.com/user-attachments/assets/fe443fd8-0c46-4694-87a5-aa164227bcb3)
 
