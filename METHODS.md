@@ -51,4 +51,10 @@ This script generates 78 output `.txt` files, one for each combination of specie
 
 ### Plotting shape conservation within species
 To visualize shape conservation, the .txt files were randomly sampled, resulting in matrices of size 1000 × 400, where 1000 represents the number of promoters and 400 represents the length of each promoter sequence. These matrices were used to plot the predicted shape features for each species and property, providing insights into promoter shape conservation across the selected species.
+The following command was used: 
+
+``` bash 
+shuf -n 1000 <athaliana_MGW_200.txt> > <athaliana_MGW_200_sample_1k.txt>
+```
+
 
