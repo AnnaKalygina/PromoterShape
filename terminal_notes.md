@@ -1,13 +1,14 @@
 **Counting the number of genes across fasta**
 
-Each gene starts with a specific ">" charecter. To count the number of 
+Each gene starts with a specific ">" character. To count the number of 
 instances of this charecter in the file, I use:
 
 ``` bash
 grep -c ">" <file.name>
 ```
 
-** Terminal and session control
+**Terminal and session control**
+
 `screen`:
 ``` bash 
 screen -S <name> # create the screen session with the <name>

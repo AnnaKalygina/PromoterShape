@@ -9,23 +9,29 @@ to the EPDnew IDs. The sequence of each promoter includes -2000 base pairs
 upstream and 2000 base pairs downstream of a reported TSS. 
 
 ### Controls
-**Shuffling seequences**
 
-To generate controls for statistical analysis, all DNA sequences were randomly shuffled, preserving the nucleotide 
-composition while eliminating any positional information. These shuffled sequences serve as a control set for 
-comparison with real promoter sequences.
+There are two types of controls I am using in this analysis:
+- random shuffling 
+- HMM generation
 
-**HMM shuffling**
-Another way to create controlled sequences is by feeding the .fasta files to the HMMER and generate the same amount of 
-random sequences that conserve nucleotide composition based on the relative position. 
-The following commads are used to build profile from multiple-sequence alignment in a raw .fasta file and then generate 
-sequence alignments using the profile: 
+**Random shuffling**
+
+To generate controls for statistical analysis, all DNA sequences were randomly shuffled, preserving the nucleotide composition while eliminating any positional information. These shuffled sequences serve as a control set for comparison with the real promoter sequences.
+
+To shuffle the sequences, the [shuffle_fasta.py](shuffle_fasta.py) script was used. This script parses FASTA files and shuffles the nucleotides within each sequence independently, resulting in the same nucleotide composition but with the bases randomly ordered.
+
+**HMM generation**
+Another method to create control sequences is by using HMMs (Hidden Markov Models) to generate random sequences based on a profile built from the input sequences. This approach conserves the nucleotide composition based on positional probabilities derived from the input sequences.
+
+The following commands are used to first build an HMM profile from a multiple-sequence alignment in a raw FASTA file and then generate random sequences based on this profile:
 
 ``` bash
 hmmbuild --dna control_promoter_sequences/athaliana_200_hmm_profile.txt raw_promoter_sequences/athaliana_200.fa 
 hmmemit -o control_promoter_sequences/athaliana_200_hmm.fa -N 22703 \ 
 control_promoter_sequences/athaliana_200_hmm_profile.txt 
 ```
+- `hmmbuild`: creates an HMM profile from the multiple-sequence alignment in the raw_promoter_sequences/athaliana_200.fa file.
+- `hmmemit`: generates random sequences based on the HMM profile. The -N 22703 option specifies the number of sequences to generate, matching the original number of sequences.
 
 ### Promoter shape prediciton
 The shape of the promoters from the six species was analyzed to investigate conservation. Promoter shape prediction was focused on the 400 bp region surrounding the TSS. The  [deepDNAshape package](https://github.com/JinsenLi/deepDNAshape/blob/main/README.md) was used to predict DNA shape properties for each promoter with the following script:
@@ -49,7 +55,7 @@ do
 done
 ```
 In this analysis, the following DNA shape features were predicted:
-- MGW (minor groove width)
+- MGW (hufflingminor groove width)
 - Shear
 - Stretch
 - Stagger
