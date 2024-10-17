@@ -130,3 +130,6 @@ The normalisation yields the same shape but on a different scale:
 
 ### Measuring conservation
 https://mathoverflow.net/questions/140813/what-is-a-good-algorithm-to-measure-similarity-between-two-dynamic-graphs
+
+Here is a species-wise comparison:
+![image](img/comparison_buckle_dm_hs.png)
