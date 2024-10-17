@@ -124,5 +124,5 @@ When working with the shapes of different promoter sequences, we want the values
 Promoters within and across species have high levels of variation, but we want to be able to assess the base pair difference while keeping the promoter-wise variation negligible. For this purpose the values across base pairs in each promoter are z-scored and then the average across promoters is calculated. With this approach we preserve the base pair -wise variation while centering the values around $0$ for more more efficient cross-species comparison. 
 
 The normalisation yields the same shape but on a different scale:
-[imalge](img/normalised_comparison.png) 
+![image](img/normalised_comparison.png) 
 
