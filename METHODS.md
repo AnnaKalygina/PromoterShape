@@ -21,6 +21,7 @@ To generate controls for statistical analysis, all DNA sequences were randomly s
 To shuffle the sequences, the [shuffle_fasta.py](shuffle_fasta.py) script was used. This script parses FASTA files and shuffles the nucleotides within each sequence independently, resulting in the same nucleotide composition but with the bases randomly ordered.
 
 **HMM generation**
+
 Another method to create control sequences is by using HMMs (Hidden Markov Models) to generate random sequences based on a profile built from the input sequences. This approach conserves the nucleotide composition based on positional probabilities derived from the input sequences.
 
 The following commands are used to first build an HMM profile from a multiple-sequence alignment in a raw FASTA file and then generate random sequences based on this profile:
@@ -70,6 +71,10 @@ In this analysis, the following DNA shape features were predicted:
 - HelT (hellical twist)
 
 This script generates 78 output `.txt` files, one for each combination of species and DNA shape property.
+
+### Statistical analysis
+#### Collapsing predicted shape matrices 
+The predicted shape matrices contain $n$ rows and $m$ columns, where $n$ - number of promoters fed in the model, $m$ - length of promoter sequences. The dataset could be collapsed into $1 \cdot m$ matrix by averaging parameter prediction across all promoters. The parameters could be averaged by simply taking the mean across all promoter sequences per position, or by taking a z-score across all promoter sequences per position.
 
 ### Plotting shape conservation within species
 To visualize shape conservation, the .txt files were randomly sampled, resulting in matrices of size 1000 × 400, where 1000 represents the number of promoters and 400 represents the length of each promoter sequence. These matrices were used to plot the predicted shape features for each species and property, providing insights into promoter shape conservation across the selected species.
