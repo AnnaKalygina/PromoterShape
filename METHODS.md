@@ -120,9 +120,13 @@ The following figures are obtained:
 ![image](https://github.com/user-attachments/assets/fe443fd8-0c46-4694-87a5-aa164227bcb3)
 
 # Statistics
+
+### Standartization
 When working with the shapes of different promoter sequences, we want the values to be normalized.
 Promoters within and across species have high levels of variation, but we want to be able to assess the base pair difference while keeping the promoter-wise variation negligible. For this purpose the values across base pairs in each promoter are z-scored and then the average across promoters is calculated. With this approach we preserve the base pair -wise variation while centering the values around $0$ for more more efficient cross-species comparison. 
 
 The normalisation yields the same shape but on a different scale:
 ![image](img/normalised_comparison.png) 
 
+### Measuring conservation
+https://mathoverflow.net/questions/140813/what-is-a-good-algorithm-to-measure-similarity-between-two-dynamic-graphs
