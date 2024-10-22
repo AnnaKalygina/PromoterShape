@@ -1,3 +1,9 @@
+### AWK
+**Calculate the number of columns in the document**
+``` bash
+awk -F' ' '{print NF; exit}' <file_name.txt>
+```
+
 **Counting the number of genes across fasta**
 
 Each gene starts with a specific ">" character. To count the number of 
@@ -27,6 +33,7 @@ ps aux | grep <script name> # check specific process or script
 jobs # list running jobs
 htop # check CPU usage
 ```
+
 
 
 

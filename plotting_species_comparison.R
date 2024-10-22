@@ -30,7 +30,7 @@ for (spec in species) {
 }
 
 
-#ggarrange(get("athaliana_plot"), get("hsapiens_plot"), 
+ggarrange(get("athaliana_plot"), get("hsapiens_plot"), 
           get("dmelanogaster_plot"), get("celegans_plot"), 
           get("pfalciparum_plot"), get("scerevisiae_plot"),
           labels = c("A", "B", "C", "D", "E", "F"),
@@ -49,7 +49,7 @@ matplot(buckle$position[26:376], cbind(buckle$hsapiens[26:376], buckle$dmelanoga
         cex.main = 1.5)
 legend("bottomright", legend = c("H. sapiens", "D. melanogaster"), 
        col = c("blue", "green"), 
-       lty = 1, lwd = 2,
+       lty = 1,
        cex = 0.8)
 
 
