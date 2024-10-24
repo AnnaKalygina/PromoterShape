@@ -34,6 +34,14 @@ control_promoter_sequences/athaliana_200_hmm_profile.txt
 - `hmmbuild`: creates an HMM profile from the multiple-sequence alignment in the raw_promoter_sequences/athaliana_200.fa file.
 - `hmmemit`: generates random sequences based on the HMM profile. The -N 22703 option specifies the number of sequences to generate, matching the original number of sequences.
 
+The nucleotide frequencies (skylign) of all tree alignments: raw promoter sequences, hmm profile and shuffled sequences were generated and compared:
+1. Raw promoter sequence 
+![image](skylign_logos/scerevisiae_raw_skylign_logo.png)
+2. HMM sequences
+![image](skylign_logos/scerevisiae_hmm_skylign_logo.png)
+3. Shuffled sequences
+![image](skylign_logos/scerevisiae_shuffled_skylign_logo.png)
+
 ### Promoter shape prediciton
 The shape of the promoters from the six species was analyzed to investigate conservation. Promoter shape prediction was focused on the 400 bp region surrounding the TSS. The  [deepDNAshape package](https://github.com/JinsenLi/deepDNAshape/blob/main/README.md) was used to predict DNA shape properties for each promoter with the following script:
 
@@ -119,6 +127,9 @@ grid.arrange(grobs = plot_list, ncol = 1)
 The following figures are obtained:
 ![image](https://github.com/user-attachments/assets/fe443fd8-0c46-4694-87a5-aa164227bcb3)
 
+### Data storage and accessing 
+
+
 # Statistics
 ### Within species conservation 
 I hypothesize that the shapes of the promoters within species are conserved. In other words, I want to show that the values of a given shape parameter across different promoters at a given position are consistent and are not significantly different. For this purpose, I perform tests to assess low variability across promoters at each position. The shape of promoter sequences is also compared to control sequences, with the expectation that real promoters have lower variability than the randomly shuffled or HMM-generated control sequences. 
@@ -137,10 +148,12 @@ One-way ANOVA is used to test whether the mean shape parameter values at a given
   - Null Hypothesis (H0): The means of the shape parameter values across promoters at the same position are equal.
   Alternative Hypothesis (H1): The means are significantly different.
 
-A non-significant ANOVA result (high p-value) suggests that the shape parameter values at the same position are not significantly different, supporting the conservation hypothesis.
-For this analysis, ANOVA is run across all base pair positions (e.g., -200 to +200 bp). 
+A non-significant ANOVA result (high p-value) suggests that the shape parameter values at the same position are not significantly different, supporting the conservation hypothesis. For this analysis, ANOVA is run across all base pair positions.
+
+
 ### Across species conservation
-I want to compare how conserved the shapes of promoters are across multiple species. There are several ways to compare 
+I want to compare how conserved the shapes of promoters are across multiple species. 
+
 #### Standartization
 When working with the shapes of different promoter sequences across many different species, we want the values to be normalized.
 Promoters within and across species have high levels of variation, but we want to be able to assess the base pair difference while keeping the promoter-wise variation negligible. For this purpose the values across base pairs in each promoter are z-scored and then the average across promoters is calculated. With this approach we preserve the base pair -wise variation while centering the values around $0$ for more more efficient cross-species comparison. 
