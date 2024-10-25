@@ -34,6 +34,9 @@ control_promoter_sequences/athaliana_200_hmm_profile.txt
 - `hmmbuild`: creates an HMM profile from the multiple-sequence alignment in the raw_promoter_sequences/athaliana_200.fa file.
 - `hmmemit`: generates random sequences based on the HMM profile. The -N 22703 option specifies the number of sequences to generate, matching the original number of sequences.
 
+P.S: A problem was encountered at this step: the `hmmemit` produces non-aligned sequences of varying length, even though the hmm_profile specifies the required sequence to be 401 nucleotides long. For example, there are 38 (out of 29k) sequences in __hsapiens__ that are longer than the requested length. As the number of such sequences is low compared to the total number of promoters analysed in each species, these excpetional sequences are removed from the further analysis. 
+
+**Skylign comparison**
 The nucleotide frequencies (skylign) of all tree alignments: raw promoter sequences, hmm profile and shuffled sequences were generated and compared:
 1. Raw promoter sequence 
 ![image](skylign_logos/scerevisiae_raw_skylign_logo.png)

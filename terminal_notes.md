@@ -3,6 +3,13 @@
 ``` bash
 awk -F' ' '{print NF; exit}' <file_name.txt>
 ```
+***Identify which raws do not contain a specified number of columns**
+``` bash 
+awk '/^>/ {if (seqlen > 401) print seqname, seqlen; seqname=$0; seqlen=0; next} {seqlen += length($0)} END {if (seqlen > 401) print seqname, seqlen}' <text_file.txt>
+
+awk '/^>/ {if (seqlen > 401) print seqname; seqname=$0; seqlen=0; next} {seqlen += length($0)} END {if (seqlen > 401) print seqname, seqlen}
+```
+In my case I am specifying the columns of length more than 401 nucleotides.
 
 **Counting the number of genes across fasta**
 
