@@ -34,7 +34,7 @@ control_promoter_sequences/athaliana_200_hmm_profile.txt
 - `hmmbuild`: creates an HMM profile from the multiple-sequence alignment in the raw_promoter_sequences/athaliana_200.fa file.
 - `hmmemit`: generates random sequences based on the HMM profile. The -N 22703 option specifies the number of sequences to generate, matching the original number of sequences.
 
-P.S: A problem was encountered at this step: the `hmmemit` produces non-aligned sequences of varying length, even though the hmm_profile specifies the required sequence to be 401 nucleotides long. For example, there are 38 (out of 29k) sequences in __hsapiens__ that are longer than the requested length. As the number of such sequences is low compared to the total number of promoters analysed in each species, these excpetional sequences are removed from the further analysis. 
+P.S: A problem was encountered at this step: the `hmmemit` produces non-aligned sequences of varying length, even though the hmm_profile specifies the required sequence to be 401 nucleotides long. For example, there are 38 (out of 29k) sequences in __hsapiens__ that are longer than the requested length. Therefore a higher total number of promoters was generated through `hmmemit` and then the relevant number of sequences with a consistent length of 401 nucleotide was taken.
 
 **Skylign comparison**
 The nucleotide frequencies (skylign) of all tree alignments: raw promoter sequences, hmm profile and shuffled sequences were generated and compared:
@@ -86,6 +86,14 @@ This script generates 78 output `.txt` files, one for each combination of specie
 ### Statistical analysis
 #### Collapsing predicted shape matrices 
 The predicted shape matrices contain $n$ rows and $m$ columns, where $n$ - number of promoters fed in the model, $m$ - length of promoter sequences. The dataset could be collapsed into $1 \cdot m$ matrix by averaging parameter prediction across all promoters. The parameters could be averaged by simply taking the mean across all promoter sequences per position, or by taking a z-score across all promoter sequences per position.
+
+### Comparing raw promoter sequences with the controls
+While shuffled sequences didn't show any descrete shape pattern, the hmm emited sequnces followed a pattern almost identical to the one displayed by the real raw promoters.
+
+![image](img/raw_vs_control_athaliana_MGW.png)
+
+In conclusion, the results suggest that nucleotide composition is influences the shape of a promoter sequence. 
+Next question is: when comparing different species do we see that the shape is more conserved than the nucleotide compositon among species?
 
 ### Plotting shape conservation within species
 To visualize shape conservation, the .txt files were randomly sampled, resulting in matrices of size 1000 × 400, where 1000 represents the number of promoters and 400 represents the length of each promoter sequence. These matrices were used to plot the predicted shape features for each species and property, providing insights into promoter shape conservation across the selected species.
