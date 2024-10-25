@@ -95,7 +95,7 @@ While shuffled sequences didn't show any descrete shape pattern, the hmm emited 
 ![image](img/raw_vs_control_athaliana_MGW.png)
 The following [code](/r_scripts/raw_hmm_shuffled_comparison_plot.R) was used for plotting the graph above.
 
-In conclusion, the results suggest that nucleotide composition is influences the shape of a promoter sequence. 
+In conclusion, the results suggest that nucleotide composition influences the shape of a promoter sequence. So the shape features are the product of nucleotide composiiton, however, in some cases the shapes of raw promoters is more exaggerated than of the hmm sequences.
 Next question is: when comparing different species do we see that the shape is more conserved than the nucleotide compositon among species?
 
 ### Plotting shape conservation within species
@@ -166,7 +166,13 @@ A non-significant ANOVA result (high p-value) suggests that the shape parameter 
 
 
 ### Across species conservation
-I want to compare how conserved the shapes of promoters are across multiple species. 
+**Is shape more conserved than the sequence?**
+I am aiming to demonstrate that promoter shapes are more conserved than promoter nucleotide composition across different eukaryotic species.
+Through comparative statistical analyses, I will quantify the extent of conservation in shape features and nucleotide composition to establish whether promoter shapes exhibit higher consistency across species.
+
+Null Hypothesis (H0): There is no significant difference in conservation between nucleotide composition and shape features across species.
+
+Alternative Hypothesis (H1): Shape features are more conserved than nucleotide composition across species.
 
 #### Standartization
 When working with the shapes of different promoter sequences across many different species, we want the values to be normalized.
@@ -180,3 +186,6 @@ https://mathoverflow.net/questions/140813/what-is-a-good-algorithm-to-measure-si
 
 Here is a species-wise comparison:
 ![image](img/comparison_buckle_dm_hs.png)
+
+### Kullback–Leibler divergence
+The KL divergence is used to calculate how the shape probability distributions and nucleotide composition distributions are different across species.
