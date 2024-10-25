@@ -87,10 +87,13 @@ This script generates 78 output `.txt` files, one for each combination of specie
 #### Collapsing predicted shape matrices 
 The predicted shape matrices contain $n$ rows and $m$ columns, where $n$ - number of promoters fed in the model, $m$ - length of promoter sequences. The dataset could be collapsed into $1 \cdot m$ matrix by averaging parameter prediction across all promoters. The parameters could be averaged by simply taking the mean across all promoter sequences per position, or by taking a z-score across all promoter sequences per position.
 
+The data for each species and each property is stored in a [long table format](/combined_dna_shape_table.csv) with the following columns: species, property, source (raw, hmm, shuffled), position and value. This data is later used for plotting comparison graphs. 
+
 ### Comparing raw promoter sequences with the controls
 While shuffled sequences didn't show any descrete shape pattern, the hmm emited sequnces followed a pattern almost identical to the one displayed by the real raw promoters.
 
 ![image](img/raw_vs_control_athaliana_MGW.png)
+The following [code](/r_scripts/raw_hmm_shuffled_comparison_plot.R) was used for plotting the graph above.
 
 In conclusion, the results suggest that nucleotide composition is influences the shape of a promoter sequence. 
 Next question is: when comparing different species do we see that the shape is more conserved than the nucleotide compositon among species?
