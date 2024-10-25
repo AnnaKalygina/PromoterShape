@@ -18,7 +18,7 @@ There are two types of controls I am using in this analysis:
 
 To generate controls for statistical analysis, all DNA sequences were randomly shuffled, preserving the nucleotide composition while eliminating any positional information. These shuffled sequences serve as a control set for comparison with the real promoter sequences.
 
-To shuffle the sequences, the [shuffle_fasta.py](shuffle_fasta.py) script was used. This script parses FASTA files and shuffles the nucleotides within each sequence independently, resulting in the same nucleotide composition but with the bases randomly ordered.
+To shuffle the sequences, the [shuffle_fasta.py](/py_scripts/shuffle_fasta.py) script was used. This script parses FASTA files and shuffles the nucleotides within each sequence independently, resulting in the same nucleotide composition but with the bases randomly ordered.
 
 **HMM generation**
 
@@ -87,7 +87,7 @@ This script generates 78 output `.txt` files, one for each combination of specie
 #### Collapsing predicted shape matrices 
 The predicted shape matrices contain $n$ rows and $m$ columns, where $n$ - number of promoters fed in the model, $m$ - length of promoter sequences. The dataset could be collapsed into $1 \cdot m$ matrix by averaging parameter prediction across all promoters. The parameters could be averaged by simply taking the mean across all promoter sequences per position, or by taking a z-score across all promoter sequences per position.
 
-The data for each species and each property is stored in a [long table format](/combined_dna_shape_table.csv) with the following columns: species, property, source (raw, hmm, shuffled), position and value. This data is later used for plotting comparison graphs. 
+The data for each species and each property is stored in a [long table format](/combined_dna_shape_table.csv) with the following columns: species, property, source (raw, hmm, shuffled), position and value. This data is later used for plotting comparison graphs. The [combine_shapes.py](/py_scripts/combine_shapes.py) was used for combining predicitons into single dataframe.
 
 ### Comparing raw promoter sequences with the controls
 While shuffled sequences didn't show any descrete shape pattern, the hmm emited sequnces followed a pattern almost identical to the one displayed by the real raw promoters.
