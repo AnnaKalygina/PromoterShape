@@ -188,4 +188,10 @@ Here is a species-wise comparison:
 ![image](img/comparison_buckle_dm_hs.png)
 
 ### Kullback–Leibler divergence
-The KL divergence is used to calculate how the shape probability distributions and nucleotide composition distributions are different across species.
+The KL divergence is used to calculate how the shape probability distributions and nucleotide composition distributions are different across species (T.D. Pham & J.Zuegg, 2004).
+
+The apprdoach used derives a probabilistic distance between two sequences using a symmetrized version of the KLD, which directly compares two Markov
+models built for the two corresponding biological sequences. It measures the similarity between any two sequences by computing the log-likelihood difference between two Markov models with the same observation data.
+
+- SimMM (SIMilarity of Markov Models)
+- CLUSTAL W

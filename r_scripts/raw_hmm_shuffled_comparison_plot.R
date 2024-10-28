@@ -3,9 +3,10 @@ library(reshape2)
 library(ggpubr)
 library(gridExtra)
 library(viridis)
+library(grid)
 
 
-data <- read.csv("~/Downloads/combined_dna_shape_table.csv")
+data <- read.csv("~/Desktop/Promoters/PromoterShape/combined_dna_shape_table.csv")
 
 species <- c("athaliana", "celegans", "dmelanogaster", "hsapiens", "pfalciparum", "scerevisiae")
 properties <- c("Buckle", "HelT", "MGW", "Opening", "ProT", "Rise", "Roll", "Shear", "Shift", "Slide", "Stagger", "Stretch", "Tilt")
@@ -43,11 +44,66 @@ for (spec in species) {
         plot.title = element_text(hjust = 0.5, face = "bold", size = 18), 
         axis.title = element_text(face = "bold", size = 16), 
         axis.text = element_text(size = 14), 
-        legend.position = "top"  # Show the legend in overlay plot
+        legend.position = "top" 
       )
     
     combined_plot <- grid.arrange(p1, p2, ncol = 1)
-    ggsave(filename = paste0("~/Downloads/", spec, "_", prop, ".pdf"), plot = combined_plot, width = 10, height = 8)
+    #ggsave(filename = paste0("~/Downloads/", spec, "_", prop, ".pdf"), plot = combined_plot, width = 10, height = 8)
     
   }
+}
+
+prop = "Opening"
+df <- data[data$species == "athaliana" & data$property ==  prop & data$source == "raw" & (data$position >= -185 & data$position <= 185) , ]
+
+
+ggplot(df, aes(x = position, y = value)) +
+      geom_point() +
+      stat_summary(fun = median, geom = "line", color = "blue", size = 1) +
+      labs(x = "Position around TSS (bp)", y = "Average Z-score") +
+      ggtitle(prop) +  
+      theme_minimal() +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 18), 
+        axis.title = element_text(face = "bold", size = 16), 
+        axis.text = element_text(size = 14), 
+        legend.position = "top"  # Show the legend in overlay plot
+      )
+
+
+
+
+
+
+species_list <- unique(data$species)
+shape_features <- unique(data$property)
+
+for (spec in species_list) {
+  
+  species_data <- data[data$species == spec & data$source == "raw" & (data$position >= -185 & data$position <= 185), ]
+  
+  plots <- list()
+  
+  for (feature in shape_features) {
+    print(feature)
+    plot <- ggplot(species_data[species_data$property == feature,],
+                   aes(x = position, y = value)) +
+      geom_line(color = "blue") + 
+      labs(title = feature,
+           x = "Position around TSS (bp)",
+           y = "Mean Z-score value") +
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5),
+            axis.title = element_text(),
+            axis.text = element_text(size = 7))
+    
+    plots[[feature]] <- plot
+  }
+  
+  
+  grid_plot <- arrangeGrob(grobs = plots, ncol = 4,
+                           top = textGrob(paste0("Shape features graphs for ", spec),
+                                          gp = gpar(fontsize = 20, fontface = "bold")))
+  
+  ggsave(paste0(spec, "_shape_plots.pdf"), grid_plot, width = 16, height = 14)
 }
