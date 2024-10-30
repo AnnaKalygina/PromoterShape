@@ -1,5 +1,6 @@
 library(ggplot2)
-library(ggpubr)
+library(dplyr)
+library(gridExtra)
 
 
 input_dir <- "~/Downloads/"
@@ -39,36 +40,66 @@ ggarrange(get("athaliana_plot"), get("hsapiens_plot"),
 
 ### Plotting pairwise comparison
 
-par(mfrow=c(1, 1))
-matplot(buckle$position[26:376], cbind(buckle$hsapiens[26:376], buckle$dmelanogaster[26:376]), 
-        type = "l", lty = 1, lwd = 2,
-        col = c("blue", "green"), xlab = "Position around TSS (bp)", 
-        ylab = "Average z-score", main = "Comparison of buckle prediction",
-        cex.lab = 1.2,  
-        cex.axis = 1.1, 
-        cex.main = 1.5)
-legend("bottomright", legend = c("H. sapiens", "D. melanogaster"), 
-       col = c("blue", "green"), 
-       lty = 1,
-       cex = 0.8)
+data <- read.csv("../tennisnyjmac/Desktop/Promoters/PromoterShape/combined_dna_shape_table.csv")
+cosine_similarity_data <- read.csv("~/Desktop/Promoters/PromoterShape/cosine_shapes_similarity.csv")
+
+filtered_data <- data %>% 
+  filter(source == "raw", position >= -185, position <= 185)
+
+species_list <- unique(filtered_data$species)
+property_list <- unique(filtered_data$property)
+
+pdf("Species_Shapes_Comparison_Plots.pdf", width = 14, height = 8)
 
 
-par(mfrow = c(1, 1))
+for (prop in property_list) {
+  prop_data <- filtered_data %>% filter(property == prop)
+  plot_list <- list()
 
-# Plot the buckle predictions with custom line thickness and colors
-matplot(buckle$position[26:376], 
-        cbind(buckle$hsapiens[26:376], buckle$dmelanogaster[26:376]), 
-        type = "l", lty = 1, lwd = 2,  # Line thickness
-        col = c("blue", "green"), 
-        xlab = "Position around TSS (bp)", 
-        ylab = "Average z-score", 
-        main = "Comparison of buckle prediction",
-        cex.lab = 1.2,  # Increase axis label size
-        cex.axis = 1.1,  # Increase axis tick size
-        cex.main = 1.5)  # Increase title size
+  species_pairs <- combn(species_list, 2, simplify = FALSE)
+  
+  for (pair in species_pairs) {
+    species1 <- pair[1]
+    species2 <- pair[2]
+    
+    species1_data <- prop_data %>% filter(species == species1)
+    species2_data <- prop_data %>% filter(species == species2)
+    
+    comparison_data <- data.frame(
+      position = species1_data$position,
+      value1 = species1_data$value,
+      value2 = species2_data$value
+    )
+    
+    cosine_similarity_value <- cosine_similarity_data %>%
+      filter(species1 == !!species1, species2 == !!species2, property == prop) %>%
+      pull(cosine_similarity)
+    
+    plot <- ggplot(comparison_data, aes(x = position)) +
+      geom_line(aes(y = value1, color = species1), size = 0.6) +
+      geom_line(aes(y = value2, color = species2), size = 0.6) +
+      labs(title = paste("Comparison of", prop, "between", species1, "and", species2),
+           x = "Position around TSS (bp)",
+           y = "Average z-score") +
+      scale_color_manual(values = c("blue", "green"), labels = c(species1, species2)) +
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5, size = 11, face = "bold"),
+            axis.title = element_text(size = 7),
+            axis.text = element_text(size = 7),
+            legend.position = "bottom",
+            legend.title = element_blank(),
+            legend.text = element_text(size = 6)) +
+      annotate("text", x = 180, y = 0.25,
+               label = round(cosine_similarity_value, 2),
+               color = "black", fontface = "bold", hjust = 1.6, size = 4)
+    
+    plot_list[[paste(species1, species2)]] <- plot
+  }
+  
+  grid_plot <- marrangeGrob(plot_list, nrow = 2, ncol = 2, top = paste("Property:", prop))
+  print(grid_plot)
+}
 
-# Add a smaller legend with custom size
-legend("topright", legend = c("H. sapiens", "D. melanogaster"), 
-       col = c("blue", "green"), 
-       lty = 1, lwd = 2,  # Line thickness in legend
-       cex = 0.8)  # Reduce the size of the legend
+dev.off()
+
+

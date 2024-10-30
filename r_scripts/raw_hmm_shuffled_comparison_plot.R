@@ -53,27 +53,8 @@ for (spec in species) {
   }
 }
 
-prop = "Opening"
-df <- data[data$species == "athaliana" & data$property ==  prop & data$source == "raw" & (data$position >= -185 & data$position <= 185) , ]
 
-
-ggplot(df, aes(x = position, y = value)) +
-      geom_point() +
-      stat_summary(fun = median, geom = "line", color = "blue", size = 1) +
-      labs(x = "Position around TSS (bp)", y = "Average Z-score") +
-      ggtitle(prop) +  
-      theme_minimal() +
-      theme(
-        plot.title = element_text(hjust = 0.5, face = "bold", size = 18), 
-        axis.title = element_text(face = "bold", size = 16), 
-        axis.text = element_text(size = 14), 
-        legend.position = "top"  # Show the legend in overlay plot
-      )
-
-
-
-
-
+### Plotting all properties in one file
 
 species_list <- unique(data$species)
 shape_features <- unique(data$property)
@@ -93,9 +74,10 @@ for (spec in species_list) {
            x = "Position around TSS (bp)",
            y = "Mean Z-score value") +
       theme_minimal() +
-      theme(plot.title = element_text(hjust = 0.5),
+      theme(plot.title = element_text(hjust = 0.5, face = "bold"),
             axis.title = element_text(),
-            axis.text = element_text(size = 7))
+            axis.text = element_text(size = 7),
+            panel.border = element_rect(color = "black", fill = NA, size = 0.7))
     
     plots[[feature]] <- plot
   }
