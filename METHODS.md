@@ -166,13 +166,17 @@ A non-significant ANOVA result (high p-value) suggests that the shape parameter 
 
 
 ### Across species conservation
-**Is shape more conserved than the sequence?**
+**Is shape more conserved than the sequence?** 
+
+
 I am aiming to demonstrate that promoter shapes are more conserved than promoter nucleotide composition across different eukaryotic species.
 Through comparative statistical analyses, I will quantify the extent of conservation in shape features and nucleotide composition to establish whether promoter shapes exhibit higher consistency across species.
 
 Null Hypothesis (H0): There is no significant difference in conservation between nucleotide composition and shape features across species.
 
 Alternative Hypothesis (H1): Shape features are more conserved than nucleotide composition across species.
+
+#### Comparing nucleotide composition across species
 
 #### Standartization
 When working with the shapes of different promoter sequences across many different species, we want the values to be normalized.
