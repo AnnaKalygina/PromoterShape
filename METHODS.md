@@ -83,69 +83,25 @@ In this analysis, the following DNA shape features were predicted:
 
 This script generates 78 output `.txt` files, one for each combination of species and DNA shape property.
 
-### Statistical analysis
-#### Collapsing predicted shape matrices 
+### Plotting shape
+To visualize shape conservation, the .txt files were transformed into matricies of shape m*n, where m = the number of promoters, and n = 401, representing the length of each promoter sequence. These matrices were used to plot the predicted shape features for each species and property, providing insights into promoter shape conservation across the selected species.
+
+![image](/shape_plots/athaliana_shape_plots.pdf)
+
+# Statistical analysis
+### Collapsing predicted shape matrices 
 The predicted shape matrices contain $n$ rows and $m$ columns, where $n$ - number of promoters fed in the model, $m$ - length of promoter sequences. The dataset could be collapsed into $1 \cdot m$ matrix by averaging parameter prediction across all promoters. The parameters could be averaged by simply taking the mean across all promoter sequences per position, or by taking a z-score across all promoter sequences per position.
 
 The data for each species and each property is stored in a [long table format](/combined_dna_shape_table.csv) with the following columns: species, property, source (raw, hmm, shuffled), position and value. This data is later used for plotting comparison graphs. The [combine_shapes.py](/py_scripts/combine_shapes.py) was used for combining predicitons into single dataframe.
 
-### Comparing raw promoter sequences with the controls
-While shuffled sequences didn't show any descrete shape pattern, the hmm emited sequnces followed a pattern almost identical to the one displayed by the real raw promoters.
+### Standartization
+When working with the shapes of different promoter sequences across many different species, we want the values to be normalized.
+Promoters within and across species have high levels of variation, but we want to be able to assess the base pair difference while keeping the promoter-wise variation negligible. For this purpose the values across base pairs in each promoter are z-scored and then the average across promoters is calculated. With this approach we preserve the base pair -wise variation while centering the values around $0$ for more more efficient cross-species comparison. 
 
-![image](img/raw_vs_control_athaliana_MGW.png)
-The following [code](/r_scripts/raw_hmm_shuffled_comparison_plot.R) was used for plotting the graph above.
+The normalisation yields the same shape but on a different scale:
+![image](img/normalised_comparison.png) 
 
-In conclusion, the results suggest that nucleotide composition influences the shape of a promoter sequence. So the shape features are the product of nucleotide composiiton, however, in some cases the shapes of raw promoters is more exaggerated than of the hmm sequences.
-Next question is: when comparing different species do we see that the shape is more conserved than the nucleotide compositon among species?
-
-### Plotting shape conservation within species
-To visualize shape conservation, the .txt files were randomly sampled, resulting in matrices of size 1000 × 400, where 1000 represents the number of promoters and 400 represents the length of each promoter sequence. These matrices were used to plot the predicted shape features for each species and property, providing insights into promoter shape conservation across the selected species.
-The following command was used: 
-
-``` bash 
-shuf -n 1000 <athaliana_MGW_200.txt> > <athaliana_MGW_200_sample_1k.txt>
-```
-The following R script is used to plot the figures:
-
-``` R
-library(ggplot2)
-library(reshape2)
-library(gridExtra)
-
-properties <- c("MGW", "Buckle","Opening", "Tilt")
-
-
-input_dir <- "~/Downloads/athaliana_"
-plot_list <- list()
-
-for (prop in properties) {
-
-  file_path <- paste0(input_dir, prop, "_200.txt")
-  data <- read.table(file_path, header = FALSE)
-  average_data <- colMeans(data)
-  positions <- seq(-200, 200, length.out = ncol(data))
-  average_df <- data.frame(Position = positions, Mean_Value = average_data)
-
-  p <- ggplot(average_df, aes(x = Position, y = Mean_Value)) +
-    geom_line(color = "blue") +
-    theme_minimal() +
-    labs(x = "Position", y = "Average Feature Value", 
-         title = paste("Average DNA Shape Prediction for", prop)) +
-    scale_x_continuous(breaks = seq(-200, 200, 50))  # Adjust x-axis ticks
-
-  plot_list[[prop]] <- p
-}
-
-grid.arrange(grobs = plot_list, ncol = 1)
-```
-The following figures are obtained:
-![image](https://github.com/user-attachments/assets/fe443fd8-0c46-4694-87a5-aa164227bcb3)
-
-### Data storage and accessing 
-
-
-# Statistics
-### Within species conservation 
+## Within species conservation 
 I hypothesize that the shapes of the promoters within species are conserved. In other words, I want to show that the values of a given shape parameter across different promoters at a given position are consistent and are not significantly different. For this purpose, I perform tests to assess low variability across promoters at each position. The shape of promoter sequences is also compared to control sequences, with the expectation that real promoters have lower variability than the randomly shuffled or HMM-generated control sequences. 
 
 The following tests are used:
@@ -165,7 +121,28 @@ One-way ANOVA is used to test whether the mean shape parameter values at a given
 A non-significant ANOVA result (high p-value) suggests that the shape parameter values at the same position are not significantly different, supporting the conservation hypothesis. For this analysis, ANOVA is run across all base pair positions.
 
 
-### Across species conservation
+### Comparing raw promoter sequences with the controls
+While shuffled sequences didn't show any descrete shape pattern, the hmm emited sequnces followed a pattern almost identical to the one displayed by the real raw promoters.
+
+![image](img/raw_vs_hmm_shapes.png)
+
+
+The following [code](/r_scripts/raw_hmm_shuffled_comparison_plot.R) was used for plotting the graph above.
+
+The results suggest that nucleotide composition plays a role in shaping the structural features of promoter sequences. While the shape characteristics generally align with the nucleotide composition, some regions of raw promoters exhibit more pronounced shape features compared to HMM-generated sequences.
+
+To identify regions where the shape of raw promoters is significantly more pronounced than that of HMM-generated promoters, I calculated the Euclidean distance between z-scored shape values of raw and HMM sequences. To assess the significance of these differences, I performed a [bootstrap test](/py_scripts/bootstrap_test.py) (1000 iterations, 100 sample size) to evaluate whether the mean difference between raw and HMM shapes is consistently non-zero. Regions where the difference is statistically significant at a confidence level of 80% or higher are marked with asterisks.
+
+
+![image](/img/difference_between_raw_and_hmm_shapes.png)
+
+### How conserved the sequences are
+The conservation calculation is based on entropy
+![image](/img/entropy_within_species.png)
+
+Next question is: when comparing different species do we see that the shape is more conserved than the nucleotide compositon among species?
+
+## Across species conservation
 **Is shape more conserved than the sequence?** 
 
 
@@ -177,14 +154,6 @@ Null Hypothesis (H0): There is no significant difference in conservation between
 Alternative Hypothesis (H1): Shape features are more conserved than nucleotide composition across species.
 
 #### Comparing nucleotide composition across species
-
-#### Standartization
-When working with the shapes of different promoter sequences across many different species, we want the values to be normalized.
-Promoters within and across species have high levels of variation, but we want to be able to assess the base pair difference while keeping the promoter-wise variation negligible. For this purpose the values across base pairs in each promoter are z-scored and then the average across promoters is calculated. With this approach we preserve the base pair -wise variation while centering the values around $0$ for more more efficient cross-species comparison. 
-
-The normalisation yields the same shape but on a different scale:
-![image](img/normalised_comparison.png) 
-
 ### Measuring conservation
 https://mathoverflow.net/questions/140813/what-is-a-good-algorithm-to-measure-similarity-between-two-dynamic-graphs
 
