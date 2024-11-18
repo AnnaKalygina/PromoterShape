@@ -3,22 +3,23 @@
 import numpy as np
 import pandas as pd
 from scipy import stats
+import argparse 
 
-def parse_shape_file(path):
-    print(f"Parsing shape file: {path}")
-    data = []
-    with open(path, 'r') as file:
-        raw_lines = file.readlines()
-    for line in raw_lines:
-        values = line.strip().split()
-        if len(values) > 401:
-            values = values[:401]
-        elif len(values) < 401:
-            values += [np.nan] * (401 - len(values))
-        data.append(values)
-    data = pd.DataFrame(data).apply(pd.to_numeric, errors='coerce')
-    print(f"Completed parsing {path}, shape: {data.shape}")
-    return data
+# def parse_shape_file(path):
+#     print(f"Parsing shape file: {path}")
+#     data = []
+#     with open(path, 'r') as file:
+#         raw_lines = file.readlines()
+#     for line in raw_lines:
+#         values = line.strip().split()
+#         if len(values) > 401:
+#             values = values[:401]
+#         elif len(values) < 401:
+#             values += [np.nan] * (401 - len(values))
+#         data.append(values)
+#     data = pd.DataFrame(data).apply(pd.to_numeric, errors='coerce')
+#     print(f"Completed parsing {path}, shape: {data.shape}")
+#     return data
 
 def bootstrap_confidence_interval(spec, prop, raw_shapes, hmm_shapes, n_bootstraps, n_samples, confidence_level=0.90):
     raw_shapes = stats.zscore(raw_shapes, axis = 1, nan_policy='omit')
@@ -60,44 +61,50 @@ def bootstrap_confidence_interval(spec, prop, raw_shapes, hmm_shapes, n_bootstra
         'significant': significant_positions
     })
 
+def main():
+    parser = argparse.ArgumentParser(prog='Bootstrap test')
+    parser.add_argument("--output_path", help="Output path", required=True)
+    parser.add_argument("--confidence_level", type=float, default=0.90, help="Confidence level for bootstrap test (default: 0.90)")
+    parser.add_argument("--sample_size", type=float, default=100, help="Sample size percentage relative to data (default: 100%)")
+    args = parser.parse_args()
+
+    species = ["athaliana", "celegans", "dmelanogaster", "hsapiens", "pfalciparum", "scerevisiae"]
+    properties = ["Buckle", "HelT", "MGW", "Opening", "ProT", "Rise", "Roll", "Shear", "Shift", "Slide", "Stagger", "Stretch", "Tilt"]
+
+    input_dir = "/local/home/quee4387/shapes_csv/"
+
+    n_bootstraps = 1000
+    result_df = pd.DataFrame(columns=["species", "property", "position", "raw_values", "hmm_values", 
+                                      "observed_difference", "alpha", "lower_bound", "upper_bound", "significant"])
+
+    for spec in species:
+        for prop in properties:
+            print(f"\nProcessing species: {spec}, property: {prop}")
+            
+            path_to_raw = f"{input_dir}{spec}_{prop}_raw.csv"
+            path_to_hmm = f"{input_dir}{spec}_{prop}_hmm.csv"
+
+            try:
+                raw_shapes = pd.read_csv(path_to_raw, header=None)
+                hmm_shapes = pd.read_csv(path_to_hmm, header=None)
+            except FileNotFoundError as e:
+                print(f"File not found: {e}")
+                continue
+
+            n_samples = int(raw_shapes.shape[0] * (args.sample_size / 100))
+            print(f"Sample size for {spec}, {prop}: {n_samples}")
+            confidence_level = args.confidence_level
+            print(f"Sample size is {n_samples} and a confidence level is {confidence_level}. Output is {args.output_path}.")
+
+            temp_df = bootstrap_confidence_interval(spec, prop, raw_shapes, hmm_shapes, n_bootstraps, n_samples, confidence_level)
+            print(temp_df)
+
+            result_df = pd.concat([result_df, temp_df], ignore_index=True)
+            print(f"Completed processing for {spec}, {prop}")
+
+    result_df.to_csv(args.output_path, index=False)
+    print(f"\nAll processing complete. Results saved to {args.output_path}")
 
 
-
-species = ["athaliana", "celegans", "dmelanogaster", "hsapiens", "pfalciparum", "scerevisiae"]
-properties = ["Buckle", "HelT", "MGW", "Opening", "ProT", "Rise", "Roll", "Shear", "Shift", "Slide", "Stagger", "Stretch", "Tilt"]
-
-raw_seq_dir = "/local/home/quee4387/dna_shape/"
-control_seq_dir = "/local/home/quee4387/dna_shape_control/"
-
-n_bootstraps = 1000
-n_samples = 100
-
-result_df = pd.DataFrame(columns=["species", "property", "position", "raw_values", "hmm_values", 
-                                  "observed_difference", "alpha", "lower_bound", "upper_bound", "significant"])
-
-for spec in species:
-    for prop in properties:
-        print(f"\nProcessing species: {spec}, property: {prop}")
-        path_to_raw = f"{raw_seq_dir}{spec}_{prop}_200.txt"
-        path_to_hmm = f"{control_seq_dir}{spec}_{prop}_200_hmm.txt"
-        confidence_level = 0.90
-        
-        try:
-            raw_shapes = parse_shape_file(path_to_raw)
-            hmm_shapes = parse_shape_file(path_to_hmm)
-        except FileNotFoundError as e:
-            print(f"File not found: {e}")
-            continue
-        
-        temp_df = bootstrap_confidence_interval(spec, prop, raw_shapes, hmm_shapes, n_bootstraps, n_samples, confidence_level)
-        print(temp_df)
-
-        result_df = pd.concat([result_df, temp_df], ignore_index=True)
-        print(f"Completed processing for {spec}, {prop}")
-
-output_path = "/local/home/quee4387/raw_vs_hmm_bootstrap_test.csv"
-result_df.to_csv(output_path, index=False)
-print(f"\nAll processing complete. Results saved to {output_path}")
-
-
-
+if __name__ == "__main__":
+    main()

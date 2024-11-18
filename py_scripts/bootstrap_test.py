@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+
+### We could increase a sample 
 def parse_shape_file(path):
     print(f"Parsing shape file: {path}")
     data = []
